@@ -20,17 +20,19 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="Cybersecurity and Reverse Engineering">
-<meta property="og:type" content="website">
-<meta property="og:title" content="serion&#39;s blog">
-<meta property="og:url" content="http://example.com/archives/index.html">
+  <meta name="description" content="关于文件格式里的BSS段和COMMON块是什么。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="文件格式-BSS段和COMMON块">
+<meta property="og:url" content="http://example.com/2021/03/12/%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F-BSS%E6%AE%B5%E5%92%8CCOMMON%E5%9D%97/index.html">
 <meta property="og:site_name" content="serion&#39;s blog">
-<meta property="og:description" content="Cybersecurity and Reverse Engineering">
+<meta property="og:description" content="关于文件格式里的BSS段和COMMON块是什么。">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-03-11T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-03-12T10:31:28.156Z">
 <meta property="article:author" content="serion">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://example.com/archives/">
+<link rel="canonical" href="http://example.com/2021/03/12/%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F-BSS%E6%AE%B5%E5%92%8CCOMMON%E5%9D%97/">
 
 
 <script id="page-configurations">
@@ -38,12 +40,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>归档 | serion's blog</title>
+  <title>文件格式-BSS段和COMMON块 | serion's blog</title>
   
 
 
@@ -146,90 +148,104 @@
         <div class="content-wrap">
           
 
-          <div class="content archive">
+          <div class="content post posts-expand">
             
 
+    
   
   
-  
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        <span class="collection-header">嗯..! 目前共计 3 篇日志。 继续努力。</span>
-      </div>
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/12/%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F-BSS%E6%AE%B5%E5%92%8CCOMMON%E5%9D%97/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="serion">
+      <meta itemprop="description" content="Cybersecurity and Reverse Engineering">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="serion's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          文件格式-BSS段和COMMON块
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-12 00:00:00" itemprop="dateCreated datePublished" datetime="2021-03-12T00:00:00+08:00">2021-03-12</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-12 18:31:28" itemprop="dateModified" datetime="2022-03-12T18:31:28+08:00">2022-03-12</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/note-file-format/" itemprop="url" rel="index"><span itemprop="name">note-file format</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <span class="collection-header">2021</span>
-    </div>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2021-11-15T00:00:00+08:00"
-              content="2021-11-15">
-          11-15
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/11/15/wp-2021-11%E6%B7%B1%E8%82%B2%E6%9D%AF/" itemprop="url">
-            <span itemprop="name">wp-2021.11深育杯</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2021-11-07T00:00:00+08:00"
-              content="2021-11-07">
-          11-07
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/11/07/wp-2%E9%81%93%E5%8F%98%E7%A7%8Dbase64/" itemprop="url">
-            <span itemprop="name">wp-2道变种base64</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2021-03-12T00:00:00+08:00"
-              content="2021-03-12">
-          03-12
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2021/03/12/%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F-BSS%E6%AE%B5%E5%92%8CCOMMON%E5%9D%97/" itemprop="url">
-            <span itemprop="name">文件格式-BSS段和COMMON块</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
+        <p>关于文件格式里的BSS段和COMMON块是什么。</p>
+<span id="more"></span>
+<h2 id="BSS段"><a href="#BSS段" class="headerlink" title="BSS段"></a>BSS段</h2><p>.bss<br>为未初始化的全局变量和局部静态变量（编译单元内部可见的静态变量）预留位置，在文件中不占据空间，没有内容。<br>global_uninit_var is denoted as 未初始化的全局变量。  </p>
+<ul>
+<li>但不是所有global_uninit_var都在BSS段中预留位置——在目标文件中，有些编译器把global_uninit_var在BSS段预留位置，有些不预留位置，不预留位置的时候也没有在其它任何段给其空间或预留位置，只是一个未定义的“COMMON 符号”。不过在最后输出的文件中，本来不在BSS段中的global_uninit_var也会在BSS段中获得分配空间。  </li>
+<li>某些初始化为0的静态变量也放在BSS段中——因为未初始化的变量也是0，所以也一起放在BSS段中，这是一个优化的手段，可以节省磁盘空间。  </li>
+</ul>
+<h2 id="COMMON块"><a href="#COMMON块" class="headerlink" title="COMMON块"></a>COMMON块</h2><p>也叫Common Block，是一种机制。<br>来源于Fortran，将声明的分配空间称作COMMON块，当块的大小不一致时，取最大的那个。<br>因为编译器不能理解符号类型，然后当符号名相同，类型不同时，无法根据类型做出处理，而是直接通过符号占用空间大小来进行判断。<br>“COMMON符号”的链接规则：</p>
+<ul>
+<li>遇到多个符号名相同的弱符号时，符号占用内存空间大小以最大的那个为准；</li>
+<li>当遇到一个强符号，还有弱符号与其符号名相同时，以强符号的空间大小为准。<br>链接后，在最终输出的文件中，BSS段已为COMMON符号预留空间。<br>执行程序时，BSS的预留空间都会被展开。  </li>
+</ul>
+<p>所以可以理解成未初始化的全局变量是都在BSS段中的。</p>
 
     </div>
-  </div>
-  
-  
-  
 
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2021/11/07/wp-2%E9%81%93%E5%8F%98%E7%A7%8Dbase64/" rel="next" title="wp-2道变种base64">
+      wp-2道变种base64 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
   
 
 
@@ -282,6 +298,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#BSS%E6%AE%B5"><span class="nav-number">1.</span> <span class="nav-text">BSS段</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#COMMON%E5%9D%97"><span class="nav-number">2.</span> <span class="nav-text">COMMON块</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
