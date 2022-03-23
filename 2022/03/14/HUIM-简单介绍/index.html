@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="数据挖掘里的高效用项集挖掘介绍，包括挖掘方法HUI-Miner、EFIM。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HUIM-简单介绍">
+<meta property="og:url" content="http://example.com/2022/03/14/HUIM-%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D/index.html">
+<meta property="og:site_name" content="serion&#39;s blog">
+<meta property="og:description" content="数据挖掘里的高效用项集挖掘介绍，包括挖掘方法HUI-Miner、EFIM。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-03-13T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-03-22T15:55:57.462Z">
+<meta property="article:author" content="serion">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2022/03/14/HUIM-%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>HUIM-简单介绍 | serion's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">serion's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/03/14/HUIM-%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="serion">
+      <meta itemprop="description" content="Cybersecurity and Reverse Engineering">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="serion's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          HUIM-简单介绍
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-03-14 00:00:00" itemprop="dateCreated datePublished" datetime="2022-03-14T00:00:00+08:00">2022-03-14</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-03-22 23:55:57" itemprop="dateModified" datetime="2022-03-22T23:55:57+08:00">2022-03-22</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Data-Mining/" itemprop="url" rel="index"><span itemprop="name">Data Mining</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Data-Mining/HUIM/" itemprop="url" rel="index"><span itemprop="name">HUIM</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>数据挖掘里的高效用项集挖掘介绍，包括挖掘方法HUI-Miner、EFIM。<br><span id="more"></span></p>
+<h1 id="HUIM-简单介绍"><a href="#HUIM-简单介绍" class="headerlink" title="HUIM-简单介绍"></a>HUIM-简单介绍</h1><h2 id="HUIM"><a href="#HUIM" class="headerlink" title="HUIM"></a>HUIM</h2><p>HUIM，high-utility itemset mining，高效用项集挖掘，是数据挖掘里的一个研究方向。<br>这里的utility表示importance。HUIM目的是找出数据中拥有高utility的项集。常见的utility应该是profit。  </p>
+<p>以下以挖掘高profit项集作为例子来介绍HUIM。 </p>
+<p>定义——  </p>
+<ul>
+<li>D：database，整个待挖掘的数据集，$D=\{T_1,T_2,T_3,…,T_n\}$。</li>
+<li>T：transaction，交易，T<sub>j</sub>表示第j个交易，这个项集中的信息包括交易项item、交易项的单位利润unit profit、交易项的被购买量quantity。</li>
+<li>I：整个D中所有出现过的item的集合。$I=\{i_1,i_2,i_3,i_4,…,i_m\}$。</li>
+<li>X：表示某个项集，是由I中一些item构成的的集合。</li>
+<li>u：utility，<b>u(i,T<sub>j</sub>)</b>是T<sub>j</sub>中某个item的utility。$u(i,T_j)=unitProfit*quantity$；<b>u(X,T<sub>j</sub>)</b>是T<sub>j</sub>中X的utility，如果T<sub>j</sub>中不含有X，此时为0，否则为X中所有的item的utility之和，$u(X,T_j)=\sum_{i\in X} u(i,T_j)$；<b>u(X)</b>是对于所有含有X的T，将u(X,T)加起来，$u(X)=\sum_{X \in T \land T\subseteq D} u(X,T)$。</li>
+<li>$\succ$：total order（linear order），表示item的排列顺序，是人为定义比较内容，然后通过计算出内容，比对之后得出item的order。比如算法HUI-Miner中使用的order为transaction-weighted-utility-ascending order，这个order的比较内容就是transaction-weighted-utility。</li>
+<li>tu：total utility，<b>tu(T<sub>j</sub>)</b>表示T<sub>j</sub>中所有item的utility之和$tu(T_j)=\sum_{i\in T_j} u(i,T_j)$。</li>
+<li>twu：transaction-weighted-utility，<b>twu(X)</b>表示对于所有含有X的T，将它们的tu(T<sub>j</sub>)加起来所得。$twu(X)=\sum_{X\subseteq T_j \land T_j\subseteq D} tu(T_j)$。</li>
+<li>ru：remaining utility，<b>ru(X,T<sub>j</sub>)</b>表示，在已经按一定order排列好了item顺序的T<sub>j</sub>中，除去X之后的所有item的uility的总和。后面会细说。<br>例如，在已经排列好item的T<sub>j</sub>={item4, item5, item2, item8}中，ru({item4, item2},T<sub>j</sub>)=item8的utility。  </li>
+<li>minUtility：阈值，若$u(X)\geq minUility$，则说明X是high-utility itemset，是所求的项集。  </li>
+<li>1-extension itemset: 给某个itemset添加了一个不存在这个itemset的item，构造出的另一个itemset对原来的itemset来说是1-extension itemset  </li>
+</ul>
+<p>性质——</p>
+<ol>
+<li>如果twu(X)&lt;minUtility，则X包括其超集都可以排除（不在这里证明）。  </li>
+<li>如果u(X)+ru(X)&lt;minUtility，则X的超集可以排除（不在这里证明）。</li>
+</ol>
+<h2 id="HUI-Miner"><a href="#HUI-Miner" class="headerlink" title="HUI-Miner"></a>HUI-Miner</h2><p>HUI-Miner，High Utility Itemset Miner，是解决HUIM问题的算法之一。使用了上文提到的性质1和2。<br>直接上代码（简化后）：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br><span class="line">301</span><br><span class="line">302</span><br><span class="line">303</span><br><span class="line">304</span><br><span class="line">305</span><br><span class="line">306</span><br><span class="line">307</span><br><span class="line">308</span><br><span class="line">309</span><br><span class="line">310</span><br><span class="line">311</span><br><span class="line">312</span><br><span class="line">313</span><br><span class="line">314</span><br><span class="line">315</span><br><span class="line">316</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//以下代码来自：</span></span><br><span class="line"><span class="comment">//This is an implementation of the &quot;HUI-MINER Algorithm&quot; for High-Utility Itemsets Mining as described in the conference paper:</span></span><br><span class="line"><span class="comment">//Liu, M., Qu, J. (2012). Mining High Utility Itemsets without Candidate Generation. Proc. of CIKM 2012. pp.55-64.</span></span><br><span class="line"><span class="comment">//@author Philippe Fournier-Viger</span></span><br><span class="line"><span class="comment">//@This file is part of the SPMF DATA MINING SOFTWARE(http://www.philippe-fournier-viger.com/spmf).</span></span><br><span class="line"><span class="comment">//致谢。</span></span><br><span class="line"><span class="comment">//下面的代码是做了修改的，如果想深入了解，请查找源代码。</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">//函数HUI-Miner_Algorithm</span></span><br><span class="line"><span class="comment">//input：D</span></span><br><span class="line"><span class="comment">//minUtility：使用人员指定的一个特殊值区别项集是否高效用</span></span><br><span class="line"><span class="keyword">void</span> HUI-Miner_Algorithm(input, minUtility)&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">//1.进行第一次scan，对D进行扫描，得到每个item的twu。</span></span><br><span class="line">        <span class="comment">//为给找到item的order打下前提——HUI-Miner是transaction-weighted-utility-ascending order</span></span><br><span class="line">        mapItemToTwu = <span class="keyword">new</span> HashMap&lt;Integer, Integer&gt;();<span class="comment">//存放item对应的twu，这里默认itemID是某个Integer，用这个Integer来识别item</span></span><br><span class="line">        <span class="keyword">while</span> ((thisLine = input.readLine()) != <span class="keyword">null</span>)&#123;<span class="comment">//遍历扫描的每一行，每一行就是一个T</span></span><br><span class="line">                items[] &lt;= itemID<span class="comment">//items存放本行的所有的itemID，是从0开始存放的线性数组</span></span><br><span class="line">                tU = 本行的tu;<span class="comment">//在D中已经默认给出</span></span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; items.length; i++) &#123;</span><br><span class="line">                    mapItemToTwu(item) += tu;<span class="comment">//给每个item的twu加上tu</span></span><br><span class="line">                &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//循环结束之后mapItemToTwu完成生成</span></span><br><span class="line">        <span class="comment">//******************************</span></span><br><span class="line">        <span class="comment">//这里默认输入D的itemID是integer。D的一行对应一个T，第一行是T0，第二行是T1这样子，遍历T都是从T0开始遍历。每行T对应的tu已经在对应行给出。</span></span><br><span class="line">        <span class="comment">//******************************</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">//2.根据性质1和每个item的twu，对item进行筛选,每个满足条件的item放进一个UtilityList，生成listOfUtilityLists；且存放规则是按order排序存放</span></span><br><span class="line">        <span class="comment">//这里listOfUtilityLists和mapItemToUtilityList存放的内容一样，但是一个是HashMap一个是ArrayList（有冗余吗？ArrayList没有HashMap那样根据item获取UtilityList方便。后面的T已经排好序了，可不可以不用HashMap？）</span></span><br><span class="line">        listOfUtilityLists = <span class="keyword">new</span> ArrayList&lt;UtilityList&gt;();</span><br><span class="line">        mapItemToUtilityList = <span class="keyword">new</span> HashMap&lt;Integer, UtilityList&gt;();</span><br><span class="line">        <span class="keyword">for</span> (item : mapItemToTWU.keySet()) &#123;<span class="comment">//遍历所有item</span></span><br><span class="line">                twu = mapItemtoTWU.get(item)</span><br><span class="line">                <span class="keyword">if</span> (twu &gt;= minUtility) </span><br><span class="line">                &#123;</span><br><span class="line">                        UtilityList uList = <span class="keyword">new</span> UtilityList(item);</span><br><span class="line">                        mapItemToUtilityList.put(item, uList);<span class="comment">//HashMap的内容增加</span></span><br><span class="line">                        listOfUtilityLists.add(uList);<span class="comment">//List的内容增加</span></span><br><span class="line">                &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//存放规则：对筛选出来的item，根据其各自的twu进行排序后放入listOfUtilityLists</span></span><br><span class="line">        Collections.sort(listOfUtilityLists, <span class="keyword">new</span> Comparator&lt;UtilityList&gt;() &#123;</span><br><span class="line">                <span class="meta">@Override</span></span><br><span class="line">                <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compare</span><span class="params">(UtilityList o1, UtilityList o2)</span> </span>&#123;</span><br><span class="line">                        <span class="keyword">return</span> compareItems(o1.item, o2.item);</span><br><span class="line">                &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        <span class="comment">//******************************</span></span><br><span class="line">        <span class="comment">//UtilityList&#123;</span></span><br><span class="line">        <span class="comment">//  item;</span></span><br><span class="line">        <span class="comment">//  ....</span></span><br><span class="line">        <span class="comment">//&#125;</span></span><br><span class="line">        <span class="comment">//******************************</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">//3.重头进行第二次scan，对D进行扫描，每个筛选后的item构成一个itemset，给这个itemset创建一个UtilityList</span></span><br><span class="line">        <span class="comment">//每个itemset对应一个UtilityList，UtilityList后面会细说</span></span><br><span class="line">        <span class="keyword">while</span> ((thisLine = input.readLine()) != <span class="keyword">null</span>)&#123;<span class="comment">//遍历扫描的每一行，每一行就是一个T</span></span><br><span class="line"></span><br><span class="line">                items[] &lt;= itemID<span class="comment">//items存放本行的所有的itemID，是从0开始存放的线性数组</span></span><br><span class="line">                utilities[] &lt;= utilityOfItem<span class="comment">//将本行所有item对应的utility放入，utilities是从0开始存放的线性数组</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">                tID = <span class="number">0</span>;<span class="comment">//表示每一行的Tj的j</span></span><br><span class="line">                remainingUtility = <span class="number">0</span>;<span class="comment">//表示每一行的ru</span></span><br><span class="line">                revisedTransaction = <span class="keyword">new</span> ArrayList&lt;Pair&gt;();</span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; items.length; i++) &#123;</span><br><span class="line">                        <span class="comment">// convert values to integers</span></span><br><span class="line">                        pair = <span class="keyword">new</span> Pair();</span><br><span class="line">                        pair.item = items[i];</span><br><span class="line">                        pair.utility = utilities[i];</span><br><span class="line">                        twu = mapItemtoTWU.get(item);</span><br><span class="line">                        <span class="keyword">if</span> (twu &gt;= minUtility) <span class="comment">//之前已经做过一次判断了其实（是否有点冗余？但是这里是针对一个T里面的item进行筛选，之前是针对一个D里面的item进行筛选）</span></span><br><span class="line">                                revisedTransaction.add(pair);<span class="comment">//和刚才构造的listOfUtilityLists、mapItemToUtilityList有点像，但是这个的item没有它们多，而且里面的item有对应的utility</span></span><br><span class="line">                                remainingUtility += pair.utility;</span><br><span class="line">                        &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="comment">//从这个循环往后已经默认排除了Tj中不满足的item。循环结束之后remainingUtility等于tu(Tj)。进行这个循环主要是为了得到排除不要item了的revisedTransaction。</span></span><br><span class="line">                <span class="comment">//存放规则：对筛选出来的Pair，根据其各自的twu进行排序后放入revisedTransaction</span></span><br><span class="line">                Collections.sort(revisedTransaction, <span class="keyword">new</span> Comparator&lt;Pair&gt;() &#123;</span><br><span class="line">                        <span class="meta">@Override</span></span><br><span class="line">                        <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compare</span><span class="params">(Pair o1, Pair o2)</span> </span>&#123;</span><br><span class="line">                                <span class="keyword">return</span> compareItems(o1.item, o2.item);</span><br><span class="line">                        &#125;</span><br><span class="line">                &#125;;</span><br><span class="line">                <span class="comment">//******************************</span></span><br><span class="line">                <span class="comment">//Pair&#123;</span></span><br><span class="line">                <span class="comment">//  item;</span></span><br><span class="line">                <span class="comment">//  utilityValues;</span></span><br><span class="line">                <span class="comment">//&#125;</span></span><br><span class="line">                <span class="comment">//******************************</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">                <span class="keyword">for</span> (pair : revisedTransaction) &#123;<span class="comment">//遍历revisedTransaction的item，将每个item构成一个itemset X</span></span><br><span class="line">                        remainingUtility = remainingUtility - pair.utility;<span class="comment">//获得X相应的remainingUtility</span></span><br><span class="line">                        uList = mapItemToUtilityList.get(pair.item);</span><br><span class="line">                        element = <span class="keyword">new</span> Element(tid, pair.utility, remainingUtility);<span class="comment">//含有这个X的entry，含有的信息包括Tj的j、u(X,Tj)、ru(X,Tj)</span></span><br><span class="line">                        uList.addElement(element);<span class="comment">//将entry放入itemset对应的UtilityList</span></span><br><span class="line">                &#125;</span><br><span class="line">                tid++;</span><br><span class="line">                <span class="comment">//******************************</span></span><br><span class="line">                <span class="comment">//UtilityList&#123;</span></span><br><span class="line">                <span class="comment">//  item;</span></span><br><span class="line">                <span class="comment">//  sumUtility;</span></span><br><span class="line">                <span class="comment">//  sumRemainingUtility;</span></span><br><span class="line">                <span class="comment">//  elements;//ListOfElement</span></span><br><span class="line">                <span class="comment">//&#125;</span></span><br><span class="line">                <span class="comment">//******************************</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//结束循环后，每个只有一个item的itemset都完成生成一个对应的UtilityList，里面存放了u(X)、ru(X)、“含有X出现Tj位置、对应的u(X,Tj)、ru(X,Tj)”的表elements</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">//深入探索超集</span></span><br><span class="line">        huiMiner(itemsetBuffer, <span class="number">0</span>, <span class="keyword">null</span>, listOfUtilityLists, minUtility);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">//函数huiMiner</span></span><br><span class="line"><span class="comment">//递归调用huiMiner以探索所有可能的超集。DFS。</span></span><br><span class="line"><span class="comment">//下面分析第一次调用huiMiner的情况——</span></span><br><span class="line"><span class="comment">//P: 未extend的itemset对应的UtilityList，在构造的时候需要用到，这里不做说明。</span></span><br><span class="line"><span class="comment">//listOfUtilityLists: 所有刚才生成的、以一个item构成itemset的UtilityList，准备探索由更多item构成的itemset是否是高效用项集</span></span><br><span class="line"><span class="comment">//minUtility: 使用人员指定的一个特殊值区别项集是否高效用</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">huiMiner</span><span class="params">(UtilityList P, listOfUtilityLists, minUtility)</span></span></span><br><span class="line"><span class="function">        <span class="title">for</span> <span class="params">(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; listOfUtilityLists.size()</span></span>; i++) &#123;</span><br><span class="line">                UtilityList uList = listOfUtilityLists.get(i);<span class="comment">//拿出itemset X对应的Utility，最先拿出的应该是twu最高的，因为之前已经排好序了。</span></span><br><span class="line">                <span class="keyword">if</span> (uList.sumUtility &gt;= minUtility) &#123;<span class="comment">//sumUtility: u(X)</span></span><br><span class="line">                        outputItemset();</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> (uList.sumUtility + uList.sumRemainingUtility &gt;= minUtility) &#123;</span><br><span class="line">                        <span class="comment">//uList.sumUtility + uList.sumRemainingUtility: 是X的超集X&#x27;的最高可能的utility，这里用到了性质2</span></span><br><span class="line">                        exListOfUtilityLists = <span class="keyword">new</span> ArrayList&lt;UtilityList&gt;();<span class="comment">//X的1-extension itemsets又可以构成另一个listOfUtilityLists，这里用exlistOfUtilityLists存放</span></span><br><span class="line">                        <span class="keyword">for</span> (<span class="keyword">int</span> j = i + <span class="number">1</span>; j &lt; ULs.size(); j++) &#123;</span><br><span class="line">                                UtilityList uListAfter = listOfUtilityLists.get(j);<span class="comment">//拿出itemset Y对应的Utility，这个Y是在X之后的</span></span><br><span class="line">                                exListOfUtilityLists.add(construct(P, uList, uListAfter));</span><br><span class="line">                                <span class="comment">//constuct可以构造X的1-extension itemsets的UtilityList，构造后添加到exListOfUtilityLists</span></span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="comment">//exListOfUtilityLists构造完成</span></span><br><span class="line">                &#125;</span><br><span class="line">                huiMiner(uList, exListOfUtilityLists, minUtility);<span class="comment">//递归</span></span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br><span class="line">```  </span><br><span class="line">  </span><br><span class="line"></span><br><span class="line">## EFIM </span><br><span class="line">EFficient high-utility Itemset Mining, 是解决HUIM问题的算法之一，使用了上文提到的所有性质。  </span><br><span class="line">直接上代码（简化后）：  </span><br><span class="line">```Java</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Run the algorithm</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> minUtil                       the minimum utility threshold (a positive integer)</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> inputPath                     the input file path</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> outputPath                    the output file path to save the result or null if to be kept in memory</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> activateTransactionMerging    adopt transaction merging technique</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> activateSubtreeUtilityPruning adopt transaction subtree utility pruning strategy</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> maxTransactionCount       record the number of transaction</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> the itemsets or null if the user choose to save to file</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"><span class="function">Itemsets <span class="title">runAlgorithm</span><span class="params">(minUtil, inputPath, outputPath, <span class="keyword">boolean</span> activateTransactionMerging,</span></span></span><br><span class="line"><span class="params"><span class="function">                                <span class="keyword">boolean</span> activateSubtreeUtilityPruning)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">        <span class="comment">// 设置是否开启功能</span></span></span><br><span class="line"><span class="function">        <span class="keyword">this</span>.activateTransactionMerging </span>= activateTransactionMerging;</span><br><span class="line">        <span class="keyword">this</span>.activateSubtreeUtilityPruning = activateSubtreeUtilityPruning;</span><br><span class="line"></span><br><span class="line">        maxTransactionCount = <span class="number">0</span>;<span class="comment">//transaction count</span></span><br><span class="line">        <span class="comment">// 将输入保存到memory中</span></span><br><span class="line">        Dataset D = <span class="keyword">new</span> Dataset(inputPath, maxTransactionCount);<span class="comment">// 默认输入和HUI-Miner一样的</span></span><br><span class="line">                </span><br><span class="line">        <span class="comment">// 扫描输入的TWU，构造utilityBinLU。Local Utility一开始大小和TWU一样。</span></span><br><span class="line">        useUtilityBinToCalculateLocalUtilityFirstTime(dataset);<span class="comment">// itemID不连续的话，utilityBinLU会含有空元素。</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 和HUI-Miner一样，先用性质1筛选items</span></span><br><span class="line">        itemsToKeep = <span class="keyword">new</span> ArrayList&lt;Integer&gt;();<span class="comment">// 输入还是默认itemID是Integer，没有用HashMap的结构了。</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">1</span>; j &lt; utilityBinLU.length; j++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (utilityBinLU[j] &gt;= minUtil) &#123;</span><br><span class="line">                itemsToKeep.add(j);</span><br><span class="line">                <span class="comment">// 结束循环之后itemsToKeep是连续的，没有空元素。</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 没有HashMap的结构的话，根据item来查找它对应的数据的话会变麻烦了？</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 根据TWU，对保留下来的promising item进行排序，排成transaction-weighted-utility-descending order。twu相同时，按itemID-descengding order。</span></span><br><span class="line">        insertionSort(itemsToKeep, utilityBinLU);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 以下定义两个索引表，一个用于从promising item的oldName(oldItemID)转换成item的newName，一个反过来</span></span><br><span class="line">        <span class="comment">// 重新定义itemID有助于加快查找速度？itemsToKeep里的itemID之间不是连续的。重新定义之后的话可以根据newItemID直接知道twu谁大谁小</span></span><br><span class="line">        <span class="comment">// newItemID越小，twu越小</span></span><br><span class="line">        oldNamesToNewNames = <span class="keyword">new</span> <span class="keyword">int</span>[dataset.getMaxItem()+<span class="number">1</span>];</span><br><span class="line">        newNamesToOldNames = <span class="keyword">new</span> <span class="keyword">int</span>[dataset.getMaxItem()+<span class="number">1</span>];<span class="comment">//[itemsToKeep.size()+1]的大小应该也可以。</span></span><br><span class="line">        <span class="comment">// We will now give the new names starting from the name &quot;1&quot;</span></span><br><span class="line">        <span class="keyword">int</span> currentName = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; itemsToKeep.size(); j++) &#123;</span><br><span class="line">                <span class="comment">// get the item old name</span></span><br><span class="line">                <span class="keyword">int</span> item = itemsToKeep.get(j);</span><br><span class="line">                <span class="comment">// give it the new name</span></span><br><span class="line">                oldNamesToNewNames[item] = currentName;</span><br><span class="line">                <span class="comment">// remember its old name</span></span><br><span class="line">                newNamesToOldNames[currentName] = item;</span><br><span class="line">                <span class="comment">// 改变itemsToKeep里的itemID</span></span><br><span class="line">                itemsToKeep.set(j, currentName);</span><br><span class="line">                currentName++;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 遍历D里的Transaction，去掉里面的unpromising item，同时把Transaction里的oldItemName改成newItemName，而且以transaction-weighted-utility-ascending order排好序</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; i &lt; D.getTransactions().size(); j++) &#123;</span><br><span class="line">                transaction = D.getTransactions().get(j);</span><br><span class="line">                transaction.removeUnpromisingItems(oldNamesToNewNames);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 将transaction排一下序，方便merge和remove</span></span><br><span class="line">        <span class="comment">// Now we will sort transactions in the database according to the proposed</span></span><br><span class="line">        <span class="comment">// total order on transaction (the lexicographical order when transactions</span></span><br><span class="line">        <span class="comment">// are read backward).</span></span><br><span class="line">        <span class="comment">// We only sort if transaction merging is activated</span></span><br><span class="line">        <span class="comment">// transaction merging</span></span><br><span class="line">        <span class="keyword">if</span> (activateTransactionMerging) &#123;</span><br><span class="line">                <span class="comment">// 比较transaction的comparator重写</span></span><br><span class="line">                D.getTransactions().sort(<span class="keyword">new</span> Comparator&lt;Transaction&gt;() &#123;</span><br><span class="line">                        <span class="meta">@Override</span></span><br><span class="line">                        <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compare</span><span class="params">(Transaction t1, Transaction t2)</span> </span>&#123;</span><br><span class="line">                                <span class="comment">// we will compare the two transaction items by items starting</span></span><br><span class="line">                                <span class="comment">// from the last items.</span></span><br><span class="line">                                <span class="keyword">int</span> pos1 = t1.items.length - <span class="number">1</span>;</span><br><span class="line">                                <span class="keyword">int</span> pos2 = t2.items.length - <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">                                <span class="comment">// if the first transaction is smaller than the second one</span></span><br><span class="line">                                <span class="keyword">if</span> (t1.items.length &lt; t2.items.length) &#123;</span><br><span class="line">                                        <span class="keyword">while</span> (pos1 &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">                                                <span class="keyword">int</span> subtraction = t2.items[pos2] - t1.items[pos1];</span><br><span class="line">                                                <span class="keyword">if</span> (subtraction != <span class="number">0</span>) &#123;</span><br><span class="line">                                                        <span class="keyword">return</span> subtraction;<span class="comment">//t2的item更大的话，返回正数</span></span><br><span class="line">                                                &#125;</span><br><span class="line">                                                pos1--;</span><br><span class="line">                                                pos2--;</span><br><span class="line">                                        &#125;</span><br><span class="line">                                        <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">                                        <span class="comment">// else if the second transaction is smaller than the first one</span></span><br><span class="line">                                &#125; <span class="keyword">else</span> <span class="keyword">if</span> (t1.items.length &gt; t2.items.length) &#123;</span><br><span class="line">                                        <span class="comment">// while the current position in the second transaction is &gt;0</span></span><br><span class="line">                                        <span class="keyword">while</span> (pos2 &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">                                                <span class="keyword">int</span> subtraction = t2.items[pos2] - t1.items[pos1];</span><br><span class="line">                                                <span class="keyword">if</span> (subtraction != <span class="number">0</span>) &#123;</span><br><span class="line">                                                        <span class="keyword">return</span> subtraction;</span><br><span class="line">                                                &#125;</span><br><span class="line">                                                pos1--;</span><br><span class="line">                                                pos2--;</span><br><span class="line">                                        &#125;</span><br><span class="line">                                        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">                                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                                        <span class="keyword">while</span> (pos2 &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">                                                <span class="keyword">int</span> subtraction = t2.items[pos2] - t1.items[pos1];</span><br><span class="line">                                                <span class="keyword">if</span> (subtraction != <span class="number">0</span>) &#123;</span><br><span class="line">                                                        <span class="keyword">return</span> subtraction;</span><br><span class="line">                                                &#125;</span><br><span class="line">                                                pos1--;</span><br><span class="line">                                                pos2--;</span><br><span class="line">                                        &#125;</span><br><span class="line">                                        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">                                &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                &#125;);</span><br><span class="line"></span><br><span class="line">                <span class="comment">// REMOVE EMPTY TRANSACTIONS</span></span><br><span class="line">                <span class="keyword">int</span> emptyTransactionCount = <span class="number">0</span>;</span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; D.getTransactions().size(); i++) &#123;</span><br><span class="line">                        transaction = D.getTransactions().get(i);</span><br><span class="line">                        <span class="keyword">if</span> (transaction.items.length == <span class="number">0</span>) </span><br><span class="line">                        &#123;</span><br><span class="line">                                emptyTransactionCount++;</span><br><span class="line">                        &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="comment">// To remove empty transactions, we just ignore the first transactions from the dataset</span></span><br><span class="line">                <span class="comment">// The reason is that empty transactions are always at the begining of the dataset</span></span><br><span class="line">                <span class="comment">// since transactions are sorted by size</span></span><br><span class="line">                D.transactions = D.transactions.subList(emptyTransactionCount, D.transactions.size());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 用于存放promings item对应的subtree utility，一开始是u(i)</span></span><br><span class="line">        utilityBinSU = <span class="keyword">new</span> <span class="keyword">int</span>[itemsToKeep.size() + <span class="number">1</span>];</span><br><span class="line">        useUtilityBinToCalculateSubtreeUtilityFirstTime(dataset);</span><br><span class="line"></span><br><span class="line">        itemsToExplore = <span class="keyword">new</span> ArrayList&lt;Integer&gt;();</span><br><span class="line">        <span class="keyword">if</span> (activateSubtreeUtilityPruning) &#123;</span><br><span class="line">            <span class="keyword">for</span> (item : itemsToKeep) &#123;</span><br><span class="line">                <span class="keyword">if</span> (utilityBinArraySU[item] &gt;= minUtil) &#123;</span><br><span class="line">                    itemsToExplore.add(item);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//secondary items: itemsToKeep</span></span><br><span class="line">        <span class="comment">//primary items: itemsToExplore</span></span><br><span class="line">        <span class="keyword">if</span> (activateSubtreeUtilityPruning) &#123;</span><br><span class="line">            <span class="comment">// We call the recursive algorithm with the database, secondary items and primary items</span></span><br><span class="line">            backtrackingEFIM(dataset.getTransactions(), itemsToKeep, itemsToExplore, <span class="number">0</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// We call the recursive algorithm with the database and secondary items</span></span><br><span class="line">            backtrackingEFIM(dataset.getTransactions(), itemsToKeep, itemsToKeep, <span class="number">0</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// return the set of high-utility itemsets</span></span><br><span class="line">        <span class="keyword">return</span> highUtilityItemsets;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* Recursive method to find all high-utility itemsets</span></span><br><span class="line"><span class="comment">*</span></span><br><span class="line"><span class="comment">* <span class="doctag">@param</span> transactionsOfP  list of transactions containing the current prefix P. The current itemset to be extended</span></span><br><span class="line"><span class="comment">* <span class="doctag">@param</span> itemsToKeep  the list of secondary items in the p-projected database</span></span><br><span class="line"><span class="comment">* <span class="doctag">@param</span> itemsToExplore  the list of primary items in the p-projected database</span></span><br><span class="line"><span class="comment">* <span class="doctag">@param</span> prefixLength  current prefixLength</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">backtrackingEFIM</span><span class="params">(transactionsOfP, itemsToKeep, itemsToExplore, <span class="keyword">int</span> prefixLength)</span></span>&#123;</span><br><span class="line">        <span class="comment">//itemsToKeep: secondary items</span></span><br><span class="line">        <span class="comment">//itemsToExplore: primary items</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; itemsToExplore.size(); j++) &#123;</span><br><span class="line">                Integer e = itemsToExplore.get(j);</span><br><span class="line"></span><br><span class="line">                <span class="comment">// ========== PERFORM INTERSECTION =====================</span></span><br><span class="line">                <span class="comment">// Calculate transactions containing P U &#123;e&#125;</span></span><br><span class="line">                <span class="comment">// At the same time project transactions to keep what appears after &quot;e&quot;</span></span><br><span class="line">                transactionsPe = <span class="keyword">new</span> ArrayList&lt;Transaction&gt;();</span><br><span class="line"></span><br><span class="line">                <span class="comment">// variable to calculate the utility of P U &#123;e&#125;</span></span><br><span class="line">                <span class="keyword">int</span> utilityPe = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">                <span class="comment">// For merging transactions, we will keep track of the last transaction read</span></span><br><span class="line">                <span class="comment">// and the number of identical consecutive transactions</span></span><br><span class="line">                Transaction previousTransaction = <span class="keyword">null</span>;</span><br><span class="line">                <span class="keyword">int</span> consecutiveMergeCount = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">                <span class="keyword">for</span> (transaction : transactionsOfP)    &#123;</span><br><span class="line">                        <span class="comment">// we remember the position where e appears.</span></span><br><span class="line">                        <span class="comment">// we will call this position an &quot;offset&quot;</span></span><br><span class="line">                        <span class="keyword">int</span> positionE = -<span class="number">1</span>;</span><br><span class="line">                        <span class="comment">// Variables low and high for binary search</span></span><br><span class="line">                        <span class="keyword">int</span> low = transaction.offset;</span><br><span class="line">                        <span class="keyword">int</span> high = transaction.items.length - <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">                        <span class="comment">// perform binary search to find e in the transaction</span></span><br><span class="line">                        <span class="keyword">while</span> (high &gt;= low) &#123;</span><br><span class="line">                                <span class="comment">// divide by 2</span></span><br><span class="line">                                <span class="keyword">int</span> middle = (low + high) &gt;&gt;&gt; <span class="number">1</span>;</span><br><span class="line">                                <span class="keyword">if</span> (transaction.items[middle] &lt; e) &#123;</span><br><span class="line">                                        low = middle + <span class="number">1</span>;</span><br><span class="line">                                &#125; <span class="keyword">else</span> <span class="keyword">if</span> (transaction.items[middle] == e) &#123;</span><br><span class="line">                                        positionE = middle;</span><br><span class="line">                                        <span class="keyword">break</span>;</span><br><span class="line">                                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                                        high = middle - <span class="number">1</span>;</span><br><span class="line">                                &#125;</span><br><span class="line">                        &#125;</span><br><span class="line"></span><br><span class="line">                        <span class="comment">// if &#x27;e&#x27; was found in the transaction</span></span><br><span class="line">                        <span class="keyword">if</span> (positionE &gt; -<span class="number">1</span>) &#123;</span><br><span class="line">                                <span class="comment">// optimization: if the &#x27;e&#x27; is the last one in this transaction,</span></span><br><span class="line">                                <span class="comment">// we don&#x27;t keep the transaction，不保存？怎么去掉这个transaction？利用什么性质？</span></span><br><span class="line">                                <span class="keyword">if</span> (transaction.getLastPosition() == positionE) &#123;</span><br><span class="line">                                        <span class="comment">// but we still update the sum of the utility of P U &#123;e&#125;</span></span><br><span class="line">                                        utilityPe += transaction.utilities[positionE] + transaction.prefixUtility;</span><br><span class="line">                                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                                        <span class="keyword">if</span> (activateTransactionMerging &amp;&amp; MAXIMUM_SIZE_MERGING &gt;= (transaction.items.length - positionE))&#123;</span><br><span class="line">                                                <span class="comment">// we cut the transaction starting from position &#x27;e&#x27;</span></span><br><span class="line">                                                Transaction projectedTransaction = <span class="keyword">new</span> Transaction(transaction, positionE);</span><br><span class="line">                                                utilityPe += projectedTransaction.prefixUtility;</span><br><span class="line"></span><br><span class="line">                                                <span class="comment">// if it is the first transaction that we read</span></span><br><span class="line">                                                <span class="keyword">if</span> (previousTransaction == <span class="keyword">null</span>) &#123;</span><br><span class="line">                                                        <span class="comment">// we keep the transaction in memory</span></span><br><span class="line">                                                        previousTransaction = projectedTransaction;</span><br><span class="line">                                                &#125; <span class="keyword">else</span> <span class="keyword">if</span> (isEqualTo(projectedTransaction, previousTransaction)) &#123;</span><br><span class="line">                                                        <span class="comment">// If it is not the first transaction of the database and</span></span><br><span class="line">                                                        <span class="comment">// if the transaction is equal to the previously read transaction,</span></span><br><span class="line">                                                        <span class="comment">// we will merge the transaction with the previous one</span></span><br><span class="line"></span><br><span class="line">                                                        <span class="comment">// increase the number of consecutive transactions merged</span></span><br><span class="line">                                                        mergeCount++;</span><br><span class="line"></span><br><span class="line">                                                        <span class="comment">// if the first consecutive merge</span></span><br><span class="line">                                                        <span class="keyword">if</span> (consecutiveMergeCount == <span class="number">0</span>) &#123;</span><br><span class="line">                                                                <span class="comment">// copy items and their profit from the previous transaction</span></span><br><span class="line">                                                                <span class="keyword">int</span> itemsCount = previousTransaction.items.length - previousTransaction.offset;</span><br><span class="line">                                                                <span class="keyword">int</span>[] items = <span class="keyword">new</span> <span class="keyword">int</span>[itemsCount];</span><br><span class="line">                                                                System.arraycopy(previousTransaction.items, previousTransaction.offset, items, <span class="number">0</span>, itemsCount);</span><br><span class="line">                                                                <span class="keyword">int</span>[] utilities = <span class="keyword">new</span> <span class="keyword">int</span>[itemsCount];</span><br><span class="line">                                                                System.arraycopy(previousTransaction.utilities, previousTransaction.offset, utilities, <span class="number">0</span>, itemsCount);</span><br><span class="line"></span><br><span class="line">                                                                <span class="comment">// make the sum of utilities from the previous transaction</span></span><br><span class="line">                                                                <span class="keyword">int</span> positionPrevious = <span class="number">0</span>;</span><br><span class="line">                                                                <span class="keyword">int</span> positionProjection = projectedTransaction.offset;</span><br><span class="line">                                                                <span class="keyword">while</span> (positionPrevious &lt; itemsCount) &#123;</span><br><span class="line">                                                                        utilities[positionPrevious] += projectedTransaction.utilities[positionProjection];</span><br><span class="line">                                                                        positionPrevious++;</span><br><span class="line">                                                                        positionProjection++;</span><br><span class="line">                                                                &#125;</span><br><span class="line"></span><br><span class="line">                                                                <span class="comment">// make the sum of prefix utilities</span></span><br><span class="line">                                                                <span class="keyword">int</span> sumUtilities = previousTransaction.prefixUtility += projectedTransaction.prefixUtility;</span><br><span class="line"></span><br><span class="line">                                                                <span class="comment">// create the new transaction replacing the two merged transactions</span></span><br><span class="line">                                                                previousTransaction = <span class="keyword">new</span> Transaction(items, utilities, previousTransaction.transactionUtility + projectedTransaction.transactionUtility);</span><br><span class="line">                                                                previousTransaction.prefixUtility = sumUtilities;</span><br><span class="line"></span><br><span class="line">                                                        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                                                                <span class="comment">// if not the first consecutive merge</span></span><br><span class="line"></span><br><span class="line">                                                                <span class="comment">// add the utilities in the projected transaction to the previously</span></span><br><span class="line">                                                                <span class="comment">// merged transaction</span></span><br><span class="line">                                                                <span class="keyword">int</span> positionPrevious = <span class="number">0</span>;</span><br><span class="line">                                                                <span class="keyword">int</span> positionProjected = projectedTransaction.offset;</span><br><span class="line">                                                                <span class="keyword">int</span> itemsCount = previousTransaction.items.length;</span><br><span class="line">                                                                <span class="keyword">while</span> (positionPrevious &lt; itemsCount) &#123;</span><br><span class="line">                                                                        previousTransaction.utilities[positionPrevious] += projectedTransaction.utilities[positionProjected];</span><br><span class="line">                                                                        positionPrevious++;</span><br><span class="line">                                                                        positionProjected++;</span><br><span class="line">                                                                &#125;</span><br><span class="line"></span><br><span class="line">                                                                <span class="comment">// make also the sum of transaction utility and prefix utility</span></span><br><span class="line">                                                                previousTransaction.transactionUtility += projectedTransaction.transactionUtility;</span><br><span class="line">                                                                previousTransaction.prefixUtility += projectedTransaction.prefixUtility;</span><br><span class="line">                                                        &#125;</span><br><span class="line">                                                        <span class="comment">// increment the number of consecutive transaction merged</span></span><br><span class="line">                                                        consecutiveMergeCount++;</span><br><span class="line">                                                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                                                        <span class="comment">// if the transaction is not equal to the preceding transaction</span></span><br><span class="line">                                                        <span class="comment">// we cannot merge it so we just add it to the database</span></span><br><span class="line">                                                        transactionsPe.add(previousTransaction);</span><br><span class="line">                                                        <span class="comment">// the transaction becomes the previous transaction</span></span><br><span class="line">                                                        previousTransaction = projectedTransaction;</span><br><span class="line">                                                        <span class="comment">// and we reset the number of consecutive transactions merged</span></span><br><span class="line">                                                        consecutiveMergeCount = <span class="number">0</span>;</span><br><span class="line">                                                &#125;</span><br><span class="line">                                        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                                                <span class="comment">// Otherwise, if merging has been deactivated</span></span><br><span class="line">                                                <span class="comment">// then we just create the projected transaction</span></span><br><span class="line">                                                Transaction projectedTransaction = <span class="keyword">new</span> Transaction(transaction, positionE);</span><br><span class="line">                                                <span class="comment">// we add the utility of Pe in that transaction to the total utility of Pe</span></span><br><span class="line">                                                utilityPe += projectedTransaction.prefixUtility;</span><br><span class="line">                                                <span class="comment">// we put the projected transaction in the projected database of Pe</span></span><br><span class="line">                                                transactionsPe.add(projectedTransaction);</span><br><span class="line">                                        &#125;</span><br><span class="line">                                &#125;</span><br><span class="line">                                <span class="comment">// This is an optimization for binary search:</span></span><br><span class="line">                                <span class="comment">// we remember the position of E so that for the next item, we will not search</span></span><br><span class="line">                                <span class="comment">// before &quot;e&quot; in the transaction since items are visited in lexicographical order</span></span><br><span class="line">                                transaction.offset = positionE;</span><br><span class="line">                        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                                <span class="comment">// This is an optimization for binary search:</span></span><br><span class="line">                                <span class="comment">// we remember the position of E so that for the next item, we will not search</span></span><br><span class="line">                                <span class="comment">// before &quot;e&quot; in the transaction since items are visited in lexicographical order</span></span><br><span class="line">                                transaction.offset = low;</span><br><span class="line">                        &#125;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="comment">// Add the last read transaction to the database if there is one</span></span><br><span class="line">                <span class="keyword">if</span> (previousTransaction != <span class="keyword">null</span>) &#123;</span><br><span class="line">                        transactionsPe.add(previousTransaction);</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="comment">// Append item &quot;e&quot; to P to obtain P U &#123;e&#125;</span></span><br><span class="line">                <span class="comment">// but at the same time translate from new name of &quot;e&quot;  to its old name</span></span><br><span class="line">                temp[prefixLength] = newNamesToOldNames[e];</span><br><span class="line"></span><br><span class="line">                <span class="comment">// if the utility of PU&#123;e&#125; is enough to be a high utility itemset</span></span><br><span class="line">                <span class="keyword">if</span> (utilityPe &gt;= minUtil) &#123;</span><br><span class="line">                        output(prefixLength, utilityPe);</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="comment">// ==== Next, we will calculate the Local Utility and Sub-tree utility of</span></span><br><span class="line">                <span class="comment">// all items that could be appended to PU&#123;e&#125; ====</span></span><br><span class="line">                useUtilityBinArraysToCalculateUpperBounds(transactionsPe, j, itemsToKeep);</span><br><span class="line"></span><br><span class="line">                <span class="comment">// We will create the new list of secondary items</span></span><br><span class="line">                List&lt;Integer&gt; newItemsToKeep = <span class="keyword">new</span> ArrayList&lt;Integer&gt;();</span><br><span class="line">                <span class="comment">// We will create the new list of primary items</span></span><br><span class="line">                List&lt;Integer&gt; newItemsToExplore = <span class="keyword">new</span> ArrayList&lt;Integer&gt;();</span><br><span class="line"></span><br><span class="line">                <span class="comment">// for each item</span></span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> k = j + <span class="number">1</span>; k &lt; itemsToKeep.size(); k++) &#123;</span><br><span class="line">                        Integer itemK = itemsToKeep.get(k);</span><br><span class="line"></span><br><span class="line">                        <span class="comment">// if the sub-tree utility is no less than min util</span></span><br><span class="line">                        <span class="keyword">if</span> (utilityBinArraySU[itemK] &gt;= minUtil) &#123;</span><br><span class="line">                        <span class="comment">// and if sub-tree utility pruning is activated</span></span><br><span class="line">                        <span class="keyword">if</span> (activateSubtreeUtilityPruning) &#123;</span><br><span class="line">                                <span class="comment">// consider that item as a primary item</span></span><br><span class="line">                                newItemsToExplore.add(itemK);</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="comment">// consider that item as a secondary item</span></span><br><span class="line">                        newItemsToKeep.add(itemK);</span><br><span class="line">                        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (utilityBinArrayLU[itemK] &gt;= minUtil) &#123;</span><br><span class="line">                        <span class="comment">// otherwise, if local utility is no less than minutil,</span></span><br><span class="line">                        <span class="comment">// consider this item to be a secondary item</span></span><br><span class="line">                        newItemsToKeep.add(itemK);</span><br><span class="line">                        &#125;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="comment">// ==== recursive call to explore larger itemsets</span></span><br><span class="line">                <span class="keyword">if</span> (activateSubtreeUtilityPruning) &#123;</span><br><span class="line">                        <span class="comment">// if sub-tree utility pruning is activated, we consider primary and secondary items</span></span><br><span class="line">                        backtrackingEFIM(transactionsPe, newItemsToKeep, newItemsToExplore, prefixLength + <span class="number">1</span>);</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                        <span class="comment">// if sub-tree utility pruning is deactivated, we consider secondary items also as primary items</span></span><br><span class="line">                        backtrackingEFIM(transactionsPe, newItemsToKeep, newItemsToKeep, prefixLength + <span class="number">1</span>);</span><br><span class="line">                &#125;</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>【还是没写完】</p>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p>[1]Liu M, Qu J (2012) Mining high utility itemsets without candidate generation. Proceedings of the 22nd ACM international conference on information and knowledge management, ACM, Maui, HI, October 2012, pp. 55–64</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/11/15/wp-2021-11%E6%B7%B1%E8%82%B2%E6%9D%AF/" rel="prev" title="wp-2021.11深育杯">
+      <i class="fa fa-chevron-left"></i> wp-2021.11深育杯
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/03/22/%E5%88%A9%E7%94%A8%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%BF%9C%E7%A8%8B%E6%8E%A7%E5%88%B6%E7%94%B5%E8%84%91/" rel="next" title="利用云服务器远程控制电脑">
+      利用云服务器远程控制电脑 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#HUIM-%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.</span> <span class="nav-text">HUIM-简单介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#HUIM"><span class="nav-number">1.1.</span> <span class="nav-text">HUIM</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HUI-Miner"><span class="nav-number">1.2.</span> <span class="nav-text">HUI-Miner</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reference"><span class="nav-number">2.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">serion</p>
+  <div class="site-description" itemprop="description">Cybersecurity and Reverse Engineering</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">serion</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
