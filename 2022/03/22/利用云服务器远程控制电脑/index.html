@@ -20,15 +20,15 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="使用frp的手段，主要针对Windows系统的远程连接控制方法，提供了每个步骤点。">
+  <meta name="description" content="使用内网穿透frp的手段，主要针对Windows系统的远程连接控制方法，提供了每个步骤点。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="利用云服务器远程控制电脑">
 <meta property="og:url" content="http://example.com/2022/03/22/%E5%88%A9%E7%94%A8%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%BF%9C%E7%A8%8B%E6%8E%A7%E5%88%B6%E7%94%B5%E8%84%91/index.html">
 <meta property="og:site_name" content="serion&#39;s blog">
-<meta property="og:description" content="使用frp的手段，主要针对Windows系统的远程连接控制方法，提供了每个步骤点。">
+<meta property="og:description" content="使用内网穿透frp的手段，主要针对Windows系统的远程连接控制方法，提供了每个步骤点。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-03-21T16:00:00.000Z">
-<meta property="article:modified_time" content="2022-03-22T16:16:50.649Z">
+<meta property="article:modified_time" content="2022-03-23T02:00:05.505Z">
 <meta property="article:author" content="serion">
 <meta name="twitter:card" content="summary">
 
@@ -185,7 +185,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-03-23 00:16:50" itemprop="dateModified" datetime="2022-03-23T00:16:50+08:00">2022-03-23</time>
+                <time title="修改时间：2022-03-23 10:00:05" itemprop="dateModified" datetime="2022-03-23T10:00:05+08:00">2022-03-23</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -212,7 +212,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>使用frp的手段，主要针对Windows系统的远程连接控制方法，提供了每个步骤点。<br><span id="more"></span></p>
+        <p>使用内网穿透frp的手段，主要针对Windows系统的远程连接控制方法，提供了每个步骤点。<br><span id="more"></span></p>
 <h1 id="利用云服务器远程控制电脑"><a href="#利用云服务器远程控制电脑" class="headerlink" title="利用云服务器远程控制电脑"></a>利用云服务器远程控制电脑</h1><h2 id="云服务器"><a href="#云服务器" class="headerlink" title="云服务器"></a>云服务器</h2><p>操作系统：Ubuntu<br>架构：amd64（<code>dkpg --printf-architecture</code>可查看）<br>首先下载frp：<br><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wget https://github.com/fatedier/frp/releases/download/v0.40.0/frp_0.40.0_linux_amd64.tar.gz</span><br><span class="line">tar xzvf frp_0.40.0_linux_amd64.tar.gz</span><br></pre></td></tr></table></figure><br>修改服务端配置文件frps.ini：<br><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[common]</span><br><span class="line">bind_port = 7000 </span><br><span class="line"># 默认配置中监听的是 7000 端口，可根据自己实际情况修改。  </span><br></pre></td></tr></table></figure><br>启动frp服务端：<br><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">./frps -c ./frps.ini</span><br><span class="line"># 后台启动方式：nohup ./frps -c ./frps.ini   &amp;  </span><br></pre></td></tr></table></figure><br>安全组的出入方向规则，都打开对应的TCP端口（这里是7000）。  </p>
 <h2 id="受控端"><a href="#受控端" class="headerlink" title="受控端"></a>受控端</h2><p>操作系统：Windows<br>首先下载终端对应的frp：<br><a target="_blank" rel="noopener" href="https://github.com/fatedier/frp/releases">https://github.com/fatedier/frp/releases</a><br>解压后修改客户端配置文件frpc.ini里的[common]（要和frps区分开来）:<br><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[common]</span><br><span class="line"># server_addr 为 FRP 服务端的公网 IP</span><br><span class="line">server_addr = 111.111.111.11</span><br><span class="line"># server_port 为 FRP 服务端监听的端口</span><br><span class="line">server_port = 7000</span><br></pre></td></tr></table></figure><br>修改客户端配置文件frpc.ini里的[ssh]：<br><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[ssh]</span><br><span class="line">type = tcp</span><br><span class="line">local_ip = 127.0.0.1</span><br><span class="line">#local_port改成3389是因为这个Windows受控端远程连接的时候默认打开的端口是3389</span><br><span class="line">local_port = 3389</span><br><span class="line"># remote_port默认是6000，按需修改</span><br><span class="line">remote_port = 6000</span><br></pre></td></tr></table></figure><br>回到云服务器的安全组的出入方向规则，打开对应的TCP端口（这里是6000）。<br>启动frp客户端：  </p>
 <pre><code>./frpc -c ./frpc.ini
